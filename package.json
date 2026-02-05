@@ -1,0 +1,11 @@
+{
+  "name": "voxture-root",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter ./pokant-landing-page dev",
+    "build": "pnpm --filter ./pokant-landing-page build",
+    "start": "pnpm --filter ./pokant-landing-page start",
+    "install:all": "pnpm --filter ./pokant-landing-page install"
+  }
+}
+

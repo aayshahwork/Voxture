@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Next.js / React build outputs
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
