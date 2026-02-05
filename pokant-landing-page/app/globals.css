@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode - inverted charcoal theme */
+    --background: 60 6% 97%; /* #F8F8F6 cream background */
+    --foreground: 180 2% 13%; /* #1F2121 charcoal text */
+    --card: 60 6% 95%;
+    --card-foreground: 180 2% 13%;
+    --popover: 60 6% 97%;
+    --popover-foreground: 180 2% 13%;
+    --primary: 185 62% 33%; /* #21808D teal */
+    --primary-foreground: 60 43% 98%;
+    --secondary: 180 2% 90%;
+    --secondary-foreground: 180 2% 13%;
+    --muted: 180 2% 92%;
+    --muted-foreground: 180 2% 40%;
+    --accent: 185 62% 33%;
+    --accent-foreground: 60 43% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 60 43% 98%;
+    --border: 180 2% 85%;
+    --input: 180 2% 85%;
+    --ring: 185 62% 33%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode - charcoal with cream text */
+    --background: 180 2% 13%; /* #1F2121 */
+    --foreground: 60 43% 98%; /* #FCFCF9 */
+    --card: 180 3% 16%;
+    --card-foreground: 60 43% 98%;
+    --popover: 180 2% 13%;
+    --popover-foreground: 60 43% 98%;
+    --primary: 185 62% 33%; /* #21808D teal */
+    --primary-foreground: 60 43% 98%;
+    --secondary: 180 3% 20%;
+    --secondary-foreground: 60 43% 98%;
+    --muted: 180 3% 20%;
+    --muted-foreground: 60 20% 70%;
+    --accent: 185 62% 33%;
+    --accent-foreground: 60 43% 98%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 60 43% 98%;
+    --border: 180 3% 25%;
+    --input: 180 3% 20%;
+    --ring: 185 62% 33%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* GPU-accelerated animations only */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes count-up {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes waveform {
+  0%, 100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes meter-fill {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-waveform {
+  animation: waveform 1s ease-in-out infinite;
+}
+
+.animate-meter-fill {
+  animation: meter-fill 2s ease-out forwards;
+  transform-origin: left;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Stagger delays for scroll animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+
+/* Code syntax highlighting */
+.code-keyword { color: #c792ea; }
+.code-string { color: #c3e88d; }
+.code-property { color: #82aaff; }
+.code-number { color: #f78c6c; }
+.code-comment { color: #546e7a; }
