@@ -469,10 +469,10 @@
             deployBtnText.textContent = 'Deploying...';
             deploySpinner.classList.remove('hidden');
 
-            // Simulate deployment delay then redirect
+            // Go to setup (analyzing) then setup redirects to results.html after progress bar
             setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 2000);
+                window.location.href = 'setup.html';
+            }, 800);
         }
 
         // Animate progress bars on page load

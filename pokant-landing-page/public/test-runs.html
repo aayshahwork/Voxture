@@ -44,57 +44,58 @@
             cursor: pointer;
             transition: background-color 0.15s;
         }
-        /* Sidebar Widget */
-        .sidebar-widget {
+
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: #FFFFFF;
+            border-right: 1px solid #E5E7EB;
             position: fixed;
-            top: 50%;
             left: 0;
-            transform: translateY(-50%);
-            width: 40px;
-            background: white;
-            border: 1px solid #E5E7EB;
-            border-left: none;
-            border-radius: 0 8px 8px 0;
-            z-index: 1000;
+            top: 64px;
+            bottom: 0;
             transition: width 300ms ease;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
-            overflow: hidden;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
-        .sidebar-widget.expanded {
-            width: 240px;
+        .sidebar.collapsed { width: 64px; }
+        .main-content {
+            margin-left: 200px;
+            transition: margin-left 300ms ease;
+            min-height: calc(100vh - 64px);
         }
-        .sidebar-widget .toggle-tab {
-            width: 40px;
-            height: 100%;
+        .main-content.sidebar-collapsed { margin-left: 64px; }
+        .nav-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            padding: 12px 16px;
+            color: #6B7280;
+            text-decoration: none;
+            transition: all 200ms;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover { background: #F9FAFB; color: #111827; }
+        .nav-item.active { background: #EFF6FF; color: #3B82F6; border-left-color: #3B82F6; }
+        .nav-item .icon { width: 20px; height: 20px; min-width: 20px; margin-right: 12px; }
+        .sidebar.collapsed .nav-item .label { display: none; }
+        .sidebar.collapsed .nav-item { justify-content: center; padding: 12px; }
+        .sidebar.collapsed .nav-item .icon { margin-right: 0; }
+        .collapse-btn {
             position: absolute;
-            right: 0;
-            top: 0;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 200ms;
         }
-        .sidebar-widget.expanded .toggle-tab {
-            border-left: 1px solid #E5E7EB;
-            background: #F9FAFB;
-        }
-        .sidebar-widget .nav-content {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 200ms ease;
-            padding: 16px;
-            padding-right: 56px;
-        }
-        .sidebar-widget.expanded .nav-content {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .sidebar-widget .toggle-icon {
-            transition: transform 300ms ease;
-        }
-        .sidebar-widget.expanded .toggle-icon {
-            transform: rotate(180deg);
-        }
+        .collapse-btn:hover { background: #F9FAFB; }
+        .collapse-btn .chevron { transition: transform 300ms ease; }
+        .sidebar.collapsed .collapse-btn .chevron { transform: rotate(180deg); }
     </style>
     <link rel='stylesheet' href='dashboard-modern.css'>
 </head>
@@ -126,52 +127,50 @@
         </div>
     </nav>
 
-    <!-- Sidebar Widget -->
-    <div id="sidebar-widget" class="sidebar-widget">
-        <div class="nav-content">
-            <nav class="space-y-1">
-                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    <span class="font-medium text-sm">Home</span>
-                </a>
-                <a href="test-runs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-primary border border-blue-100">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                    </svg>
-                    <span class="text-sm">Test Runs</span>
-                </a>
-                <a href="analytics.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <span class="text-sm">Analytics</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
-                    </svg>
-                    <span class="text-sm">Dataset</span>
-                </a>
-                <a href="settings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    <span class="text-sm">Settings</span>
-                </a>
-            </nav>
-        </div>
-        <div class="toggle-tab" onclick="toggleSidebar()">
-            <svg class="w-5 h-5 text-text-light toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+    <!-- Left Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <nav class="flex-1 py-4">
+            <a href="dashboard.html" class="nav-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="label text-sm font-medium">Home</span>
+            </a>
+            <a href="test-runs.html" class="nav-item active">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="label text-sm">Test Runs</span>
+            </a>
+            <a href="analytics.html" class="nav-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span class="label text-sm">Analytics</span>
+            </a>
+            <a href="#" class="nav-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                </svg>
+                <span class="label text-sm">Dataset</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="label text-sm">Settings</span>
+            </a>
+        </nav>
+        <button class="collapse-btn" onclick="toggleSidebar()">
+            <svg class="chevron w-4 h-4 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-        </div>
-    </div>
+        </button>
+    </aside>
 
-    <div class="flex">
-        <!-- Main Content -->
+    <!-- Main Content -->
+    <div id="main-content" class="main-content flex">
         <main class="flex-1 p-6 mr-72">
             <!-- Header -->
             <div class="page-header header-row">
@@ -717,7 +716,10 @@
     <script>
         // Sidebar toggle functionality
         function toggleSidebar() {
-            document.getElementById('sidebar-widget').classList.toggle('expanded');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('sidebar-collapsed');
         }
     </script>
 </body>
