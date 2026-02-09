@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { ArrowRight, ArrowDown, Menu, X, Check, Mic, Zap, BarChart3, Link2, Target } from "lucide-react"
+import { ArrowRight, ArrowDown, Menu, X, Check, Mic, Zap, BarChart3, Link2, Target, TrendingUp, FlaskConical, Sparkles, GitBranch, Rocket } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 function useInView(threshold = 0.1) {
@@ -472,7 +472,7 @@ export default function LandingPage() {
           </div>
 
           <div
-            className={`grid md:grid-cols-2 gap-6 max-w-4xl mx-auto transition-all duration-700 delay-150 ${
+            className={`grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-20 transition-all duration-700 delay-150 ${
               differentRef.isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
@@ -496,6 +496,73 @@ export default function LandingPage() {
                   <div className="flex justify-between"><span className="text-muted-foreground">Recoverable:</span> <span>128</span></div>
                   <div className="flex justify-between text-primary font-semibold mt-2"><span>Impact:</span> <span>128 more successful calls</span></div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`transition-all duration-700 delay-200 ${
+              differentRef.isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
+          >
+            <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-10">
+              Why we&apos;re built different
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {[
+                {
+                  icon: TrendingUp,
+                  title: "Real business outcomes",
+                  description: "We verify CRM events, payments, and conversions — not just model metrics.",
+                },
+                {
+                  icon: FlaskConical,
+                  title: "Live production A/B tests",
+                  description: "We run experiments on real traffic, not offline simulations.",
+                },
+                {
+                  icon: Sparkles,
+                  title: "Auto-generated prompt fixes",
+                  description: "Failure clusters drive fixes automatically — no human guesswork.",
+                },
+                {
+                  icon: GitBranch,
+                  title: "Agent orchestration pipeline",
+                  description: "End-to-end control of your voice agent flow, not fragmented tools.",
+                },
+                {
+                  icon: Rocket,
+                  title: "Auto-promote to production",
+                  description: "Winners go live directly with no manual handoff.",
+                },
+              ].map((item, i) => (
+                <div
+                  key={item.title}
+                  className="group flex flex-col bg-card/40 backdrop-blur-sm border border-border/40 rounded-2xl p-6 hover:border-primary/40 hover:-translate-y-0.5 transition-all duration-300"
+                  style={{ animationDelay: `${i * 50}ms` }}
+                >
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors shrink-0">
+                    <item.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h4 className="text-base font-semibold text-foreground mb-2">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-10 sm:mt-14 flex justify-center">
+              <div className="inline-flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Outcomes, not vanity metrics
+                </span>
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Real traffic, real tests
+                </span>
+                <span className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-primary shrink-0" />
+                  Zero manual promotion
+                </span>
               </div>
             </div>
           </div>
