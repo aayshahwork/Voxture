@@ -8,15 +8,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['Roboto Mono', 'monospace']
+                        sans: ['Inter', 'sans-serif']
                     },
                     colors: {
                         background: '#FAFAFA',
@@ -39,110 +37,139 @@
             font-family: 'Inter', sans-serif;
             background-color: #FAFAFA;
         }
-        /* Sidebar Widget */
-        .sidebar-widget {
+
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: #FFFFFF;
+            border-right: 1px solid #E5E7EB;
             position: fixed;
-            top: 50%;
             left: 0;
-            transform: translateY(-50%);
-            width: 40px;
+            top: 64px;
+            bottom: 0;
+            transition: width 300ms ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed {
+            width: 64px;
+        }
+
+        .main-content {
+            margin-left: 200px;
+            transition: margin-left 300ms ease;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 64px;
+        }
+
+        /* Nav items */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #6B7280;
+            text-decoration: none;
+            transition: all 200ms;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #F9FAFB;
+            color: #111827;
+        }
+
+        .nav-item.active {
+            background: #EFF6FF;
+            color: #3B82F6;
+            border-left-color: #3B82F6;
+        }
+
+        .nav-item .icon {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            margin-right: 12px;
+        }
+
+        .sidebar.collapsed .nav-item .label {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar.collapsed .nav-item .icon {
+            margin-right: 0;
+        }
+
+        /* Collapse button */
+        .collapse-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             background: white;
             border: 1px solid #E5E7EB;
-            border-left: none;
-            border-radius: 0 8px 8px 0;
-            z-index: 1000;
-            transition: width 300ms ease;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-        .sidebar-widget.expanded {
-            width: 240px;
-        }
-        .sidebar-widget .toggle-tab {
-            width: 40px;
-            height: 100%;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 200ms;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            position: absolute;
-            right: 0;
-            top: 0;
         }
-        .sidebar-widget.expanded .toggle-tab {
-            border-left: 1px solid #E5E7EB;
+
+        .collapse-btn:hover {
             background: #F9FAFB;
         }
-        .sidebar-widget .nav-content {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 200ms ease;
-            padding: 16px;
-            padding-right: 56px;
-        }
-        .sidebar-widget.expanded .nav-content {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .sidebar-widget .toggle-icon {
+
+        .collapse-btn .chevron {
             transition: transform 300ms ease;
         }
-        .sidebar-widget.expanded .toggle-icon {
+
+        .sidebar.collapsed .collapse-btn .chevron {
             transform: rotate(180deg);
         }
-        .transcript-bg { background-color: #F9FAFB; }
-        .btn-hover:hover { transform: scale(1.02); filter: brightness(0.95); }
+
+        /* Tooltip for collapsed state */
+        .sidebar.collapsed .nav-item {
+            position: relative;
+        }
+
+        .sidebar.collapsed .nav-item:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #111827;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            margin-left: 8px;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body class="bg-background min-h-screen">
-    <!-- Sidebar Widget -->
-    <div id="sidebar-widget" class="sidebar-widget">
-        <div class="nav-content">
-            <nav class="space-y-1">
-                <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-primary border border-blue-100">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                    <span class="font-medium text-sm">Home</span>
-                </a>
-                <a href="test-runs.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                    </svg>
-                    <span class="text-sm">Test Runs</span>
-                </a>
-                <a href="analytics.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                    <span class="text-sm">Analytics</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
-                    </svg>
-                    <span class="text-sm">Dataset</span>
-                </a>
-                <a href="settings.html" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-medium hover:text-text-dark hover:bg-gray-50 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                    <span class="text-sm">Settings</span>
-                </a>
-            </nav>
-        </div>
-        <div class="toggle-tab" onclick="toggleSidebar()">
-            <svg class="w-5 h-5 text-text-light toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-        </div>
-    </div>
-
     <!-- Top Navigation -->
-    <nav id="nav" class="bg-white border-b border-border sticky top-0 z-50 opacity-0">
-        <div class="px-10 h-16 flex items-center justify-between">
+    <nav class="bg-white border-b border-border sticky top-0 z-50 h-16">
+        <div class="px-6 h-full flex items-center justify-between">
             <a href="/" class="text-xl font-bold text-text-dark">Pokant</a>
+            <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-border">
+                <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                <span class="text-sm text-text-light">Voice Bot:</span>
+                <span class="text-sm font-medium text-text-dark">ConstructBot v2</span>
+            </div>
             <div class="flex items-center gap-6">
                 <a href="settings.html" class="flex items-center gap-2 text-text-medium hover:text-text-dark transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,10 +188,53 @@
         </div>
     </nav>
 
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <nav class="flex-1 py-4">
+            <a href="dashboard.html" class="nav-item active" data-tooltip="Home">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="label text-sm font-medium">Home</span>
+            </a>
+            <a href="test-runs.html" class="nav-item" data-tooltip="Test Runs">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="label text-sm">Test Runs</span>
+            </a>
+            <a href="analytics.html" class="nav-item" data-tooltip="Analytics">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span class="label text-sm">Analytics</span>
+            </a>
+            <a href="dataset.html" class="nav-item" data-tooltip="Dataset">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                </svg>
+                <span class="label text-sm">Dataset</span>
+            </a>
+            <a href="settings.html" class="nav-item" data-tooltip="Settings">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="label text-sm">Settings</span>
+            </a>
+        </nav>
+
+        <button class="collapse-btn" onclick="toggleSidebar()">
+            <svg class="chevron w-4 h-4 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+    </aside>
+
     <!-- Main Content -->
-    <main class="px-10 py-8">
+    <main class="main-content p-8">
         <!-- KPI Cards Row -->
-        <div id="kpi-row" class="grid grid-cols-3 gap-6 mb-8 opacity-0">
+        <div class="grid grid-cols-3 gap-6 mb-8">
             <!-- Success Rate Card -->
             <div class="bg-white rounded-xl border border-border shadow-sm p-6 relative">
                 <div class="flex items-start justify-between mb-4">
@@ -177,7 +247,7 @@
                     <span class="px-3 py-1 text-xs font-medium text-error bg-red-50 rounded-full">Below Industry</span>
                 </div>
                 <div class="mb-2">
-                    <span id="kpi-success" class="text-5xl font-bold text-text-dark">0</span>
+                    <span class="text-5xl font-bold text-text-dark">64</span>
                     <span class="text-3xl font-bold text-text-dark">%</span>
                 </div>
                 <p class="text-sm text-text-light">Industry avg: 78%</p>
@@ -192,7 +262,7 @@
                     <span class="text-sm text-text-light">Total Calls</span>
                 </div>
                 <div class="mb-2">
-                    <span id="kpi-calls" class="text-5xl font-bold text-text-dark">0</span>
+                    <span class="text-5xl font-bold text-text-dark">1,247</span>
                 </div>
                 <p class="text-sm text-text-light">Last 30 days</p>
             </div>
@@ -210,14 +280,14 @@
                 </div>
                 <div class="mb-2">
                     <span class="text-lg text-text-light">/mo</span>
-                    <span id="kpi-revenue" class="text-5xl font-bold text-text-dark">$0</span>
+                    <span class="text-5xl font-bold text-text-dark">$8,000</span>
                 </div>
                 <p class="text-sm text-text-light">From failed conversions</p>
             </div>
         </div>
 
         <!-- Chart Section -->
-        <div id="chart-section" class="bg-white rounded-xl border border-border shadow-sm p-6 mb-8 opacity-0">
+        <div class="bg-white rounded-xl border border-border shadow-sm p-6 mb-8">
             <h2 class="text-lg font-semibold text-text-dark mb-6">Success Rate Trend (Last 4 Weeks)</h2>
             <div class="h-72">
                 <canvas id="successChart"></canvas>
@@ -225,7 +295,7 @@
         </div>
 
         <!-- Failure Pattern Section -->
-        <div id="failure-section" class="bg-white rounded-xl border border-border shadow-sm p-6 opacity-0">
+        <div class="bg-white rounded-xl border border-border shadow-sm p-6">
             <div class="flex items-start justify-between mb-4">
                 <h2 class="text-lg font-semibold text-text-dark">Customer Changes Mind Mid-Conversation</h2>
                 <span class="px-3 py-1 text-xs font-medium text-error">Critical Pattern</span>
@@ -248,10 +318,10 @@
             </div>
 
             <!-- Transcript Box -->
-            <div class="transcript-bg rounded-lg p-6 mb-6 font-mono">
+            <div class="bg-gray-50 rounded-lg p-5 mb-6">
                 <h3 class="text-sm font-semibold text-text-dark mb-4">Sample Transcript</h3>
 
-                <div class="space-y-4 text-sm">
+                <div class="space-y-4">
                     <!-- Bot Message -->
                     <div class="flex gap-3">
                         <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
@@ -312,13 +382,13 @@
 
             <!-- Action Buttons -->
             <div class="flex items-center gap-4">
-                <button class="btn-hover flex items-center gap-2 px-6 py-3 border border-border rounded-xl text-text-medium hover:bg-gray-50 transition-all duration-200">
+                <button class="flex items-center gap-2 px-6 py-3 border border-border rounded-lg text-text-medium hover:bg-gray-50 transition-colors">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
                     </svg>
                     <span class="text-sm font-medium">Play Call Recording</span>
                 </button>
-                <a href="testing.html" class="btn-hover flex items-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 rounded-xl text-white transition-all duration-200">
+                <a href="testing.html" class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 rounded-lg text-white transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -330,68 +400,10 @@
     </main>
 
     <script>
-        // Animation helpers (project spec)
-        function animateNumber(element, end, options = {}) {
-            const duration = options.duration || 1.2;
-            const suffix = options.suffix || '';
-            const prefix = options.prefix || '';
-            const decimals = options.decimals != null ? options.decimals : 0;
-            const start = options.start != null ? options.start : 0;
-            gsap.fromTo(element, { textContent: start }, {
-                textContent: end,
-                duration,
-                ease: 'power2.out',
-                snap: { textContent: decimals === 0 ? 1 : Math.pow(10, -decimals) },
-                onUpdate: function() {
-                    const v = parseFloat(element.textContent);
-                    element.textContent = prefix + (decimals ? v.toFixed(decimals) : Math.round(v)) + suffix;
-                }
-            });
-        }
-
-        function animateProgressBar(element, endPercent, durationMs, labelEl, suffix = '%') {
-            const startTime = performance.now();
-            function update(currentTime) {
-                const elapsed = currentTime - startTime;
-                const t = Math.min(elapsed / durationMs, 1);
-                const eased = 1 - Math.pow(1 - t, 1.5);
-                const value = Math.round(eased * endPercent);
-                element.style.width = value + '%';
-                if (labelEl) labelEl.textContent = value + suffix;
-                if (t < 1) requestAnimationFrame(update);
-            }
-            requestAnimationFrame(update);
-        }
-
         // Sidebar toggle
         function toggleSidebar() {
-            document.getElementById('sidebar-widget').classList.toggle('expanded');
+            document.getElementById('sidebar').classList.toggle('collapsed');
         }
-
-        // Staggered page load: Nav -> KPIs -> Chart -> Failure section
-        gsap.to('#nav', { opacity: 1, duration: 0.4, ease: 'power2.out' });
-        gsap.to('#kpi-row', { opacity: 1, y: 0, duration: 0.5, delay: 0.2, ease: 'power2.out' });
-        gsap.fromTo('#kpi-row', { y: 16 }, { y: 0, duration: 0, delay: 0.2 });
-
-        setTimeout(function() {
-            animateNumber(document.getElementById('kpi-success'), 64, { duration: 1, decimals: 0 });
-            animateNumber(document.getElementById('kpi-calls'), 1247, { duration: 1.2, decimals: 0 });
-            const revEl = document.getElementById('kpi-revenue');
-            gsap.fromTo(revEl, { textContent: '$0' }, {
-                textContent: 8000,
-                duration: 1.2,
-                ease: 'power2.out',
-                snap: { textContent: 1 },
-                onUpdate: function() {
-                    revEl.textContent = '$' + Math.round(parseFloat(revEl.textContent));
-                }
-            });
-        }, 700);
-
-        gsap.to('#chart-section', { opacity: 1, y: 0, duration: 0.5, delay: 0.5, ease: 'power2.out' });
-        gsap.fromTo('#chart-section', { y: 16 }, { y: 0, duration: 0, delay: 0.5 });
-        gsap.to('#failure-section', { opacity: 1, y: 0, duration: 0.5, delay: 0.8, ease: 'power2.out' });
-        gsap.fromTo('#failure-section', { y: 16 }, { y: 0, duration: 0, delay: 0.8 });
 
         // Success Rate Chart
         const ctx = document.getElementById('successChart').getContext('2d');

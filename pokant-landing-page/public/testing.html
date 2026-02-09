@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokant - A/B Test Variants</title>
+    <title>Pokant - Choose a Variant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,12 +12,15 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    },
                     colors: {
                         background: '#FAFAFA',
                         card: '#FFFFFF',
                         border: '#E5E7EB',
                         'text-dark': '#111827',
+                        'text-medium': '#374151',
                         'text-light': '#6B7280',
                         primary: '#3B82F6',
                         success: '#10B981',
@@ -30,112 +32,458 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #FAFAFA; }
-        .card-hover:hover { transform: scale(1.02); filter: brightness(0.98); }
-        .btn-hover:hover { transform: scale(1.02); filter: brightness(0.95); }
-        .variant-recommended { border: 2px solid #EAB308; box-shadow: 0 0 0 1px #FACC15; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAFA;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 200px;
+            background: #FFFFFF;
+            border-right: 1px solid #E5E7EB;
+            position: fixed;
+            left: 0;
+            top: 64px;
+            bottom: 0;
+            transition: width 300ms ease;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.collapsed {
+            width: 64px;
+        }
+
+        .main-content {
+            margin-left: 200px;
+            transition: margin-left 300ms ease;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar.collapsed ~ .main-content {
+            margin-left: 64px;
+        }
+
+        /* Nav items */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #6B7280;
+            text-decoration: none;
+            transition: all 200ms;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #F9FAFB;
+            color: #111827;
+        }
+
+        .nav-item.active {
+            background: #EFF6FF;
+            color: #3B82F6;
+            border-left-color: #3B82F6;
+        }
+
+        .nav-item .icon {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            margin-right: 12px;
+        }
+
+        .sidebar.collapsed .nav-item .label {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .sidebar.collapsed .nav-item .icon {
+            margin-right: 0;
+        }
+
+        /* Collapse button */
+        .collapse-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 200ms;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .collapse-btn:hover {
+            background: #F9FAFB;
+        }
+
+        .collapse-btn .chevron {
+            transition: transform 300ms ease;
+        }
+
+        .sidebar.collapsed .collapse-btn .chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Variant Cards */
+        .variant-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+
+        .variant-card:hover {
+            border-color: #D1D5DB;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: scale(1.005);
+        }
+
+        .variant-card.selected {
+            border: 2px solid #3B82F6;
+            background: #EFF6FF;
+        }
+
+        /* Progress bar animation */
+        .progress-fill {
+            transition: width 800ms ease-out;
+        }
+
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 300ms ease forwards;
+        }
+
+        /* Spinner */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Hidden class */
+        .hidden-btn {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px);
+            transition: all 300ms ease;
+        }
+
+        .visible-btn {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Line clamp */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="bg-background min-h-screen">
-    <!-- Top Nav -->
-    <nav class="bg-white border-b border-border sticky top-0 z-50">
-        <div class="px-8 h-16 flex items-center justify-between">
-            <a href="dashboard.html" class="text-xl font-bold text-text-dark">Pokant</a>
-            <div class="flex items-center gap-4">
-                <a href="settings.html" class="text-sm font-medium text-text-light hover:text-text-dark transition-colors">Settings</a>
-                <a href="signin.html" class="text-sm font-medium text-text-light hover:text-text-dark transition-colors">Logout</a>
+    <!-- Top Navigation -->
+    <nav class="bg-white border-b border-border sticky top-0 z-50 h-16">
+        <div class="px-6 h-full flex items-center justify-between">
+            <a href="/" class="text-xl font-bold text-text-dark">Pokant</a>
+            <div class="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-border">
+                <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                <span class="text-sm text-text-light">Voice Bot:</span>
+                <span class="text-sm font-medium text-text-dark">ConstructBot v2</span>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="settings.html" class="flex items-center gap-2 text-text-medium hover:text-text-dark transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Settings</span>
+                </a>
+                <a href="signin.html" class="flex items-center gap-2 text-text-medium hover:text-text-dark transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span class="text-sm font-medium">Logout</span>
+                </a>
             </div>
         </div>
     </nav>
 
-    <main class="p-8 max-w-6xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-text-dark mb-2">Choose a variant to deploy</h1>
-            <p class="text-text-light">Customer Changes Mind pattern — 5 response variants from your last test</p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Variant A -->
-            <div class="card-hover bg-card border border-border rounded-xl shadow-sm p-6 transition-all duration-200 cursor-pointer">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="font-semibold text-text-dark">Variant A</span>
-                    <span class="text-xs text-text-light">Baseline</span>
-                </div>
-                <p class="text-sm text-text-light mb-4">"Of course! Is there anything specific you'd like to reconsider?"</p>
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-text-light">Success rate</span>
-                    <span class="font-semibold text-text-dark">64.0%</span>
-                </div>
-            </div>
-
-            <!-- Variant B - RECOMMENDED -->
-            <div class="variant-recommended card-hover bg-card rounded-xl p-6 transition-all duration-200 cursor-pointer relative">
-                <div class="absolute top-4 right-4 flex items-center gap-1.5 px-2 py-1 bg-amber-100 text-amber-800 rounded-md text-xs font-semibold">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    RECOMMENDED
-                </div>
-                <div class="flex items-center justify-between mb-4">
-                    <span class="font-semibold text-text-dark">Variant B</span>
-                </div>
-                <p class="text-sm text-text-light mb-4">"I understand — take your time. Would you like me to send a reminder before the appointment?"</p>
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-text-light">Success rate</span>
-                    <span class="font-semibold text-success">84.1%</span>
-                </div>
-            </div>
-
-            <!-- Variant C -->
-            <div class="card-hover bg-card border border-border rounded-xl shadow-sm p-6 transition-all duration-200 cursor-pointer">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="font-semibold text-text-dark">Variant C</span>
-                </div>
-                <p class="text-sm text-text-light mb-4">"No problem at all. Feel free to call back when you're ready to confirm."</p>
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-text-light">Success rate</span>
-                    <span class="font-semibold text-text-dark">71.2%</span>
-                </div>
-            </div>
-
-            <!-- Variant D -->
-            <div class="card-hover bg-card border border-border rounded-xl shadow-sm p-6 transition-all duration-200 cursor-pointer">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="font-semibold text-text-dark">Variant D</span>
-                </div>
-                <p class="text-sm text-text-light mb-4">"Sure thing. We'll keep your slot on hold for 24 hours — just call back to confirm."</p>
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-text-light">Success rate</span>
-                    <span class="font-semibold text-text-dark">78.5%</span>
-                </div>
-            </div>
-
-            <!-- Variant E -->
-            <div class="card-hover bg-card border border-border rounded-xl shadow-sm p-6 transition-all duration-200 cursor-pointer">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="font-semibold text-text-dark">Variant E</span>
-                </div>
-                <p class="text-sm text-text-light mb-4">"Understood. I've noted that you'll call back — is there anything else I can help with today?"</p>
-                <div class="flex items-center justify-between text-sm">
-                    <span class="text-text-light">Success rate</span>
-                    <span class="font-semibold text-text-dark">69.8%</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-8 flex items-center gap-4">
-            <a href="results.html" class="btn-hover inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-blue-600 text-white font-medium rounded-xl transition-all duration-200">
-                Deploy Variant B
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <nav class="flex-1 py-4">
+            <a href="dashboard.html" class="nav-item" data-tooltip="Home">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                <span class="label text-sm font-medium">Home</span>
             </a>
-            <a href="dashboard.html" class="btn-hover inline-flex items-center gap-2 px-6 py-3 border border-border rounded-xl text-text-dark hover:bg-gray-50 transition-all duration-200">
-                Back to Dashboard
+            <a href="test-runs.html" class="nav-item active" data-tooltip="Test Runs">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                </svg>
+                <span class="label text-sm">Test Runs</span>
             </a>
+            <a href="analytics.html" class="nav-item" data-tooltip="Analytics">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span class="label text-sm">Analytics</span>
+            </a>
+            <a href="dataset.html" class="nav-item" data-tooltip="Dataset">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
+                </svg>
+                <span class="label text-sm">Dataset</span>
+            </a>
+            <a href="settings.html" class="nav-item" data-tooltip="Settings">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="label text-sm">Settings</span>
+            </a>
+        </nav>
+
+        <button class="collapse-btn" onclick="toggleSidebar()">
+            <svg class="chevron w-4 h-4 text-text-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content p-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-text-dark mb-2">Choose a variant to deploy</h1>
+                <p class="text-text-light">Customer Changes Mind pattern — 5 response variants from your last test</p>
+            </div>
+
+            <!-- Current Performance Context -->
+            <div class="mb-6 flex items-center gap-2">
+                <span class="text-sm text-text-light">Current performance:</span>
+                <span class="text-sm font-semibold text-text-dark">64% success rate</span>
+            </div>
+
+            <!-- Variant Cards -->
+            <div class="space-y-4 mb-8" id="variantCards">
+                <!-- Variant A -->
+                <div class="variant-card" data-variant="A" onclick="selectVariant('A')">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 pr-8">
+                            <h3 class="text-lg font-semibold text-text-dark mb-2">Variant A: Standard Acknowledgment</h3>
+                            <p class="text-sm text-text-light line-clamp-2">"I understand. Let me update that for you."</p>
+                        </div>
+                        <div class="text-right flex-shrink-0" style="width: 220px;">
+                            <div class="mb-2">
+                                <span class="text-3xl font-bold text-text-dark">71%</span>
+                                <span class="text-sm font-semibold text-success ml-1">(+7%)</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                <div class="progress-fill h-full bg-primary rounded-full" style="width: 0%" data-target="71"></div>
+                            </div>
+                            <p class="text-xs text-text-light">Tested against 100 scenarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variant B - RECOMMENDED -->
+                <div class="variant-card relative" data-variant="B" onclick="selectVariant('B')">
+                    <!-- Recommended Badge -->
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1.5 bg-warning text-white text-xs font-bold rounded-full">RECOMMENDED</span>
+                    </div>
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 pr-8">
+                            <h3 class="text-lg font-semibold text-text-dark mb-2 flex items-center gap-2">
+                                <span>Variant B: Explicit Confirmation</span>
+                                <span class="text-warning text-xl">⭐</span>
+                            </h3>
+                            <p class="text-sm text-text-light line-clamp-2">"No problem! Just to confirm: you now want Wednesday instead of Tuesday, correct?"</p>
+                        </div>
+                        <div class="text-right flex-shrink-0" style="width: 220px; margin-top: 28px;">
+                            <div class="mb-2">
+                                <span class="text-3xl font-bold text-text-dark">86%</span>
+                                <span class="text-sm font-semibold text-success ml-1">(+22%)</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                <div class="progress-fill h-full bg-success rounded-full" style="width: 0%" data-target="86"></div>
+                            </div>
+                            <p class="text-xs text-text-light">Tested against 100 scenarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variant C -->
+                <div class="variant-card" data-variant="C" onclick="selectVariant('C')">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 pr-8">
+                            <h3 class="text-lg font-semibold text-text-dark mb-2">Variant C: Empathetic Redirect</h3>
+                            <p class="text-sm text-text-light line-clamp-2">"I totally understand! Let me change that right away."</p>
+                        </div>
+                        <div class="text-right flex-shrink-0" style="width: 220px;">
+                            <div class="mb-2">
+                                <span class="text-3xl font-bold text-text-dark">68%</span>
+                                <span class="text-sm font-semibold text-success ml-1">(+4%)</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                <div class="progress-fill h-full bg-gray-400 rounded-full" style="width: 0%" data-target="68"></div>
+                            </div>
+                            <p class="text-xs text-text-light">Tested against 100 scenarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variant D -->
+                <div class="variant-card" data-variant="D" onclick="selectVariant('D')">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 pr-8">
+                            <h3 class="text-lg font-semibold text-text-dark mb-2">Variant D: Clarifying Question</h3>
+                            <p class="text-sm text-text-light line-clamp-2">"Which day would you prefer instead?"</p>
+                        </div>
+                        <div class="text-right flex-shrink-0" style="width: 220px;">
+                            <div class="mb-2">
+                                <span class="text-3xl font-bold text-text-dark">79%</span>
+                                <span class="text-sm font-semibold text-success ml-1">(+15%)</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                <div class="progress-fill h-full bg-primary rounded-full" style="width: 0%" data-target="79"></div>
+                            </div>
+                            <p class="text-xs text-text-light">Tested against 100 scenarios</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variant E -->
+                <div class="variant-card" data-variant="E" onclick="selectVariant('E')">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1 pr-8">
+                            <h3 class="text-lg font-semibold text-text-dark mb-2">Variant E: Summary Confirmation</h3>
+                            <p class="text-sm text-text-light line-clamp-2">"Okay, so Wednesday at 2pm then?"</p>
+                        </div>
+                        <div class="text-right flex-shrink-0" style="width: 220px;">
+                            <div class="mb-2">
+                                <span class="text-3xl font-bold text-text-dark">73%</span>
+                                <span class="text-sm font-semibold text-success ml-1">(+9%)</span>
+                            </div>
+                            <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                <div class="progress-fill h-full bg-primary rounded-full" style="width: 0%" data-target="73"></div>
+                            </div>
+                            <p class="text-xs text-text-light">Tested against 100 scenarios</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-4">
+                <a href="dashboard.html" class="px-6 py-3 border border-border rounded-lg text-text-medium hover:bg-gray-50 transition-colors text-sm font-medium">
+                    Back to Dashboard
+                </a>
+                <button id="deployBtn" class="hidden-btn px-6 py-3 bg-primary hover:bg-blue-600 rounded-lg text-white transition-colors text-sm font-medium inline-flex items-center gap-2" onclick="deployVariant()">
+                    <span id="deployBtnText">Deploy Variant</span>
+                    <svg id="deploySpinner" class="hidden animate-spin w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
     </main>
 
     <script>
-        gsap.from('nav', { opacity: 0, y: -8, duration: 0.4, ease: 'power2.out' });
-        gsap.from('main h1', { opacity: 0, y: 12, duration: 0.4, delay: 0.1, ease: 'power2.out' });
-        gsap.from('main .grid > div', { opacity: 0, y: 16, duration: 0.4, stagger: 0.08, delay: 0.25, ease: 'power2.out' });
-        gsap.from('main .mt-8', { opacity: 0, y: 8, duration: 0.4, delay: 0.7, ease: 'power2.out' });
+        // Sidebar toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // Track selected variant
+        let selectedVariant = null;
+
+        // Select variant
+        function selectVariant(variantLetter) {
+            // Remove selected class from all cards
+            document.querySelectorAll('.variant-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Add selected class to clicked card
+            const selectedCard = document.querySelector(`[data-variant="${variantLetter}"]`);
+            selectedCard.classList.add('selected');
+
+            // Update selected variant
+            selectedVariant = variantLetter;
+
+            // Update and show deploy button
+            const deployBtn = document.getElementById('deployBtn');
+            const deployBtnText = document.getElementById('deployBtnText');
+            deployBtnText.textContent = `Deploy Variant ${variantLetter}`;
+            deployBtn.classList.remove('hidden-btn');
+            deployBtn.classList.add('visible-btn');
+        }
+
+        // Deploy variant
+        function deployVariant() {
+            if (!selectedVariant) return;
+
+            const deployBtn = document.getElementById('deployBtn');
+            const deployBtnText = document.getElementById('deployBtnText');
+            const deploySpinner = document.getElementById('deploySpinner');
+
+            deployBtn.disabled = true;
+            deployBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            deployBtnText.textContent = 'Deploying...';
+            deploySpinner.classList.remove('hidden');
+
+            // Simulate deployment delay then redirect
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
+
+        // Animate progress bars on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach((bar, index) => {
+                const target = bar.getAttribute('data-target');
+                setTimeout(() => {
+                    bar.style.width = target + '%';
+                }, 100 + (index * 100));
+            });
+        });
     </script>
 </body>
 </html>
