@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata, Viewport } from "next"
+import Link from "next/link"
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
 import { RejectionHandler } from "./rejection-handler"
 import "./globals.css"
@@ -39,6 +40,16 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <RejectionHandler />
         {children}
+
+        {/* Global quick-access button */}
+        <div className="fixed bottom-6 right-6 z-[100]">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center justify-center rounded-xl border border-border/50 bg-card/80 px-4 py-2.5 text-sm font-semibold text-foreground shadow-lg backdrop-blur hover:border-primary/40 hover:bg-card/90 transition-colors"
+          >
+            View dashboard
+          </Link>
+        </div>
       </body>
     </html>
   )
