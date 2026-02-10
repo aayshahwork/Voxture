@@ -294,19 +294,19 @@
                     Back to Call breakdown - Run #47
                 </a>
                 <h1 class="text-2xl font-bold text-text-dark mb-2">Generated variants for this failure pattern</h1>
-                <p class="text-text-light">These responses are generated from the exact breakdown in Run #47 (defer - cancel - CRM 422). Pick one and deploy with staged safety checks.</p>
+                <p class="text-text-light">These responses are generated from the exact breakdown in Run #47 (defer - hallucinated slot context - cancel - CRM 422). Pick one and deploy with staged safety checks.</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-red-50 border border-red-200 rounded-xl p-4">
                     <p class="text-xs uppercase tracking-wider text-error font-semibold mb-1">Observed Failure</p>
-                    <p class="text-sm text-text-dark font-medium">No clear cancel path + Hubspot sync failed</p>
-                    <p class="text-xs text-text-light mt-1">Customer intent changed, bot did not close state safely.</p>
+                    <p class="text-sm text-text-dark font-medium">No clear cancel path + hallucinated slot status + Hubspot sync failed</p>
+                    <p class="text-xs text-text-light mt-1">Customer intent changed, bot kept stale context and did not close state safely.</p>
                 </div>
                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                     <p class="text-xs uppercase tracking-wider text-primary font-semibold mb-1">Generated Fix Goal</p>
-                    <p class="text-sm text-text-dark font-medium">Resolve defer vs cancel explicitly</p>
-                    <p class="text-xs text-text-light mt-1">Every variant confirms next step and CRM update in natural language.</p>
+                    <p class="text-sm text-text-dark font-medium">Resolve defer vs cancel with context grounding</p>
+                    <p class="text-xs text-text-light mt-1">Every variant re-reads live intent + slot context before replying, then confirms CRM update in natural language.</p>
                 </div>
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
                     <p class="text-xs uppercase tracking-wider text-warning font-semibold mb-1">Deployment Mode</p>
@@ -320,7 +320,7 @@
                     <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     <p class="text-sm font-semibold text-text-dark">Validated on previous production calls</p>
                 </div>
-                <p class="text-sm text-text-medium">Model family benchmark: <span class="font-semibold">3,420 prior production calls</span>, <span class="font-semibold text-success">91.6% success rate</span> on defer/cancel recovery flows, <span class="font-semibold text-success">97.9% CRM write success</span> with retry enabled.</p>
+                <p class="text-sm text-text-medium">Model family benchmark: <span class="font-semibold">5,280 prior production calls</span>, <span class="font-semibold text-success">93.4% success rate</span> on defer/cancel recovery flows, <span class="font-semibold text-success">98.1% CRM write success</span> with retry enabled.</p>
                 <p class="text-xs text-text-light mt-1">These candidates are adapted from that trained baseline to this specific failure path.</p>
             </div>
 
@@ -330,7 +330,7 @@
                     <div class="bg-gray-50 rounded-lg p-3 border border-border"><p class="text-xs text-text-light uppercase mb-1">Task completion</p><p class="font-semibold text-text-dark">40%</p></div>
                     <div class="bg-gray-50 rounded-lg p-3 border border-border"><p class="text-xs text-text-light uppercase mb-1">CRM success</p><p class="font-semibold text-text-dark">25%</p></div>
                     <div class="bg-gray-50 rounded-lg p-3 border border-border"><p class="text-xs text-text-light uppercase mb-1">Sentiment recovery</p><p class="font-semibold text-text-dark">20%</p></div>
-                    <div class="bg-gray-50 rounded-lg p-3 border border-border"><p class="text-xs text-text-light uppercase mb-1">Latency</p><p class="font-semibold text-text-dark">15%</p></div>
+                    <div class="bg-gray-50 rounded-lg p-3 border border-border"><p class="text-xs text-text-light uppercase mb-1">Context grounding</p><p class="font-semibold text-text-dark">15%</p></div>
                 </div>
             </div>
 
