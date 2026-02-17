@@ -235,9 +235,9 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden md:flex items-center gap-4">
-              <Button size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <a href="https://calendly.com/avidesai0110-metc/new-meeting" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary hover:bg-primary/90 text-primary-foreground h-9 px-4 py-2">
                 Book a 15-min setup call
-              </Button>
+              </a>
             </div>
 
             <button className="md:hidden text-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -262,9 +262,9 @@ export default function LandingPage() {
                 Who It&apos;s For
               </Link>
               <hr className="border-border/40" />
-              <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+              <a href="https://calendly.com/avidesai0110-metc/new-meeting" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 w-full bg-primary hover:bg-primary/90 text-primary-foreground h-9 px-4 py-2">
                 Book a 15-min setup call
-              </Button>
+              </a>
             </div>
           </div>
         )}
@@ -619,10 +619,10 @@ export default function LandingPage() {
             Connect your Vapi agent. Get your first failure analysis within 24 hours. No commitment.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
+            <a href="https://calendly.com/avidesai0110-metc/new-meeting" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-12">
               Book a 15-min setup call
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            </a>
           </div>
           <p className="text-sm text-muted-foreground mt-6">
             Free for qualifying teams during beta. 3 spots remaining.
